@@ -1,18 +1,17 @@
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+"use client";
+import React from "react";
+import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 
-export default function breadcrumbs() {
+export default function App() {
   return (
     <div className="h-screen">
-      <h1 className="text-center text-3xl">Breadcrumbs</h1>
-      <div className="p-5">
-        <Breadcrumbs>
-          <BreadcrumbItem>Home</BreadcrumbItem>
-          <BreadcrumbItem>Music</BreadcrumbItem>
-          <BreadcrumbItem>Artist</BreadcrumbItem>
-          <BreadcrumbItem>Album</BreadcrumbItem>
-          <BreadcrumbItem>Song</BreadcrumbItem>
-        </Breadcrumbs>
-      </div>
+      <Breadcrumbs>
+        <BreadcrumbItem>Home</BreadcrumbItem>
+        <BreadcrumbItem>Music</BreadcrumbItem>
+        <BreadcrumbItem>Artist</BreadcrumbItem>
+        <BreadcrumbItem>Album</BreadcrumbItem>
+        <BreadcrumbItem>Song</BreadcrumbItem>
+      </Breadcrumbs>
     </div>
   );
 }

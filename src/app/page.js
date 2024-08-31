@@ -47,6 +47,33 @@ export default function Home() {
             Breadcrumbs
           </Button>
         </div>
+        <div className="p-5">
+          <Button
+            size="md"
+            color="primary"
+            onClick={() => move("/Components/calendar")}
+          >
+            Calendar
+          </Button>
+        </div>
+        <div className="p-5">
+          <Button
+            size="md"
+            color="danger"
+            onClick={() => move("/Components/checkbox")}
+          >
+            CheckBox
+          </Button>
+        </div>
+        <div className="p-5">
+          <Button
+            size="md"
+            color="secondary"
+            onClick={() => move("/Components/cards")}
+          >
+            Cards
+          </Button>
+        </div>
       </div>
     </main>
   );
