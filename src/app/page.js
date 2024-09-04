@@ -74,6 +74,15 @@ export default function Home() {
             Cards
           </Button>
         </div>
+        <div className="p-5">
+          <Button
+            size="md"
+            color="warning"
+            onClick={() => move("/Components/dashboard-task")}
+          >
+            Dashboard Task
+          </Button>
+        </div>
       </div>
     </main>
   );
