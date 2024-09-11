@@ -6,7 +6,7 @@ export default function FormList() {
   const [list, setList] = useState([]);
   console.log(list);
 
-  const BASE_URL = process.env.DB_BASE_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     const fetchList = async () => {

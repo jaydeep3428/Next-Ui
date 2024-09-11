@@ -33,7 +33,7 @@ export default function DashBoard() {
     gender: "",
   });
 
-  const BASE_URL = process.env.DB_BASE_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
