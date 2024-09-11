@@ -64,7 +64,7 @@ export default function SideBar() {
                 <ul className="mt-4 flex flex-col gap-4 pl-6">
                   <li>
                     <Link
-                      href="/Blog"
+                      href="#"
                       className="text-slate-400 font-semibold px-4"
                     >
                       Blog
@@ -72,7 +72,7 @@ export default function SideBar() {
                   </li>
                   <li>
                     <Link
-                      href="dashboard-task/inquryList"
+                      href="/"
                       className="text-slate-400 font-semibold px-4"
                     >
                       Inquiry List
@@ -80,7 +80,7 @@ export default function SideBar() {
                   </li>
                   <li>
                     <Link
-                      href="/task"
+                      href="#"
                       className="text-slate-400 font-semibold px-4"
                     >
                       Task
@@ -88,7 +88,7 @@ export default function SideBar() {
                   </li>
                   <li>
                     <Link
-                      href="/Others"
+                      href="#"
                       className="text-slate-400 font-semibold px-4"
                     >
                       Others
