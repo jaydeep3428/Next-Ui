@@ -1,17 +1,43 @@
 "use client";
-import { Button, DatePicker, Input } from "@nextui-org/react";
+import {
+  Button,
+  DatePicker,
+  image,
+  Input,
+  Radio,
+  RadioGroup,
+} from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { SwitchThemes } from "../SwitchThemes";
+import { Toaster, toast } from "sonner";
 
 export default function DashBoard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [no, setNo] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDes] = useState("");
+  const [date, setDate] = useState("");
+  // const [image, setImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [gender, setGender] = useState("");
+  const [errors, setErrors] = useState({
+    name: "",
+    no: "",
+    title: "",
+    description: "",
+    date: "",
+    image: "",
+    gender: "",
+  });
+
+  const BASE_URL = process.env.DB_BASE_URL;
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
-  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -23,8 +49,57 @@ export default function DashBoard() {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    const newErrors = {
+      name: !name ? "Name is required" : "",
+      no: !no ? "Mobile No is required" : "",
+      title: !title ? "Title is required" : "",
+      description: !description ? "Description is required" : "",
+      date: !date ? "Date is required" : "",
+      image: !image ? "Image is required" : "",
+      gender: !gender ? "Gender is required" : "",
+    };
+
+    setErrors(newErrors);
+
+    // Check if there are any errors
+    const hasErrors = Object.values(newErrors).some((error) => error);
+
+    if (hasErrors) {
+      // Handle successful form submission
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    console.log(name, no, title, description, date);
+
+    let result = await fetch(`${BASE_URL}/api/formlist`, {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        no,
+        title,
+        description,
+        date,
+        image: selectedImage,
+        gender,
+      }),
+    });
+    result = await result.json();
+    if (result.success) {
+      toast.success("New Data Added.");
+    } else {
+      toast.error("Failed to add data.");
+    }
+  };
+
   return (
     <div className="relative z-10">
+      <Toaster position="top-right" richColors />
       <div>
         <div className="flex h-screen overflow-hidden">
           <aside
@@ -84,10 +159,10 @@ export default function DashBoard() {
                       </li>
                       <li>
                         <Link
-                          href="/htmlForm"
+                          href="dashboard-task/inquryList"
                           className="text-slate-400 font-semibold px-4"
                         >
-                          Inquiry htmlForm
+                          Inquiry List
                         </Link>
                       </li>
                       <li>
@@ -258,34 +333,107 @@ export default function DashBoard() {
             <main className="overflow-auto">
               <div className="mx-auto max-w-screen-2xl p-4 md:p-6 lg:p-10">
                 <div className="rounded-sm border border-stone-300 bg-white px-8 py-6 shadow-default">
-                  <htmlForm action="#" className="relative">
+                  <form onSubmit={handleSubmit} action="#" className="relative">
                     <h1 className="mb-6 text-center font-bold text-2xl text-primary-500">
                       Inquiry Form
                     </h1>
                     <div>
                       <div className="py-4">
-                        <Input type="text" label="Name:" />
-                      </div>
-                      <div className="py-4">
-                        <Input type="text" label="Mobile No:" />
-                      </div>
-                      <div className="py-4">
-                        <Input type="text" label="Title:" />
-                      </div>
-                      <div className="py-4">
-                        <Input type="text" label="Description:" />
-                      </div>
-                      <div className="py-4">
-                        <DatePicker
-                          label="Birth Date"
-                          showMonthAndYearPickers
+                        <Input
+                          type="text"
+                          label="Name:"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className={
+                            errors.name
+                              ? "border-red-500 border-4 rounded-2xl"
+                              : ""
+                          }
                         />
+                        {errors.name && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.name}
+                          </p>
+                        )}
+                      </div>
+                      <div className="py-4">
+                        <Input
+                          type="text"
+                          label="Mobile No:"
+                          value={no}
+                          onChange={(e) => setNo(e.target.value)}
+                          className={
+                            errors.no
+                              ? "border-red-500 border-4 rounded-2xl"
+                              : ""
+                          }
+                        />
+                        {errors.no && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.no}
+                          </p>
+                        )}
+                      </div>
+                      <div className="py-4">
+                        <Input
+                          type="text"
+                          label="Title:"
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
+                          className={
+                            errors.title
+                              ? "border-red-500 border-4 rounded-2xl"
+                              : ""
+                          }
+                        />
+                        {errors.title && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.title}
+                          </p>
+                        )}
+                      </div>
+                      <div className="py-4">
+                        <Input
+                          type="text"
+                          label="Description:"
+                          value={description}
+                          onChange={(e) => setDes(e.target.value)}
+                          className={
+                            errors.description
+                              ? "border-red-500 border-4 rounded-2xl"
+                              : ""
+                          }
+                        />
+                        {errors.description && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.description}
+                          </p>
+                        )}
+                      </div>
+                      <div className="py-4">
+                        <input
+                          type="date"
+                          label="Birth Date"
+                          className={`w-full px-3 py-3.5 rounded-xl text-default-600 text-small bg-default-100 hover:bg-default-200 ${
+                            errors.date
+                              ? "border-red-500 border-4 rounded-2xl"
+                              : ""
+                          }`}
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                        />
+                        {errors.date && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.date}
+                          </p>
+                        )}
                       </div>
                       <div className="py-4">
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleImageChange}
+                          value={image}
                           className="block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-full file:border-0
@@ -293,23 +441,53 @@ export default function DashBoard() {
                       file:bg-blue-50 file:text-blue-700
                       hover:file:bg-blue-100"
                         />
+                        {selectedImage && (
+                          <div className="mt-4">
+                            <Image
+                              src={selectedImage}
+                              alt="Selected Image"
+                              width={500}
+                              height={300}
+                              className="object-cover mt-2"
+                            />
+                          </div>
+                        )}
+                        {errors.image && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.image}
+                          </p>
+                        )}
                       </div>
-
-                      {selectedImage && (
-                        <div className="mt-4">
-                          <Image
-                            src={selectedImage}
-                            alt="Selected Image"
-                            width={500}
-                            height={300}
-                          />
-                        </div>
-                      )}
+                      <div className="py-4">
+                        <RadioGroup
+                          label="Select Gender"
+                          orientation="horizontal"
+                          color="secondary"
+                          onChange={(e) => setGender(e.target.value)}
+                        >
+                          <Radio value="Male" className="text-black">
+                            Male
+                          </Radio>
+                          <Radio value="Female" className="text-black">
+                            Female
+                          </Radio>
+                          <Radio value="Others" className="text-black">
+                            Others
+                          </Radio>
+                        </RadioGroup>
+                        {errors.gender && (
+                          <p className="text-red-500 text-sm pl-3 mt-1">
+                            {errors.gender}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="flex justify-center py-4">
-                      <Button color="danger">Submit</Button>
+                      <Button type="submit" color="danger">
+                        Submit
+                      </Button>
                     </div>
-                  </htmlForm>
+                  </form>
                 </div>
               </div>
             </main>
