@@ -72,7 +72,7 @@ export default function SideBar() {
                   </li>
                   <li>
                     <Link
-                      href="/"
+                      href="#"
                       className="text-slate-400 font-semibold px-4"
                     >
                       Inquiry List

@@ -8,6 +8,8 @@ const formdata_model = new mongoose.Schema({
   date: String,
   image: String,
   gender: String,
+  city: String,
+  skills: String,
 });
 
 export const formdata =

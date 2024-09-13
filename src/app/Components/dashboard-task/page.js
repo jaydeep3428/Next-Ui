@@ -1,15 +1,16 @@
 "use client";
 import {
   Button,
-  DatePicker,
   image,
   Input,
   Radio,
   RadioGroup,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SwitchThemes } from "../SwitchThemes";
 import { Toaster, toast } from "sonner";
 
@@ -20,9 +21,10 @@ export default function DashBoard() {
   const [title, setTitle] = useState("");
   const [description, setDes] = useState("");
   const [date, setDate] = useState("");
-  // const [image, setImage] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
   const [gender, setGender] = useState("");
+  const [city, setCity] = useState("");
+  const [skills, setSkills] = useState("");
   const [errors, setErrors] = useState({
     name: "",
     no: "",
@@ -31,7 +33,63 @@ export default function DashBoard() {
     date: "",
     image: "",
     gender: "",
+    city: "",
+    skills: "",
   });
+
+  const validateData = (value) => /^[a-z\s]+$/.test(value);
+  const validateNumber = (value) => /^[0-9]+$/.test(value);
+  const validateDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value);
+
+  const isnumInvalid = useMemo(() => {
+    if (no === "" || no.length !== 10) return true;
+
+    return !validateNumber(no);
+  }, [no]);
+
+  const isInvalidname = useMemo(() => {
+    if (name === "") return true;
+
+    return !validateData(name);
+  }, [name]);
+
+  const isInvalidtitle = useMemo(() => {
+    if (title === "") return true;
+
+    return !validateData(title);
+  }, [title]);
+
+  const isInvaliddes = useMemo(() => {
+    if (description === "") return true;
+
+    return !validateData(description);
+  }, [description]);
+
+  const isInvaliddate = useMemo(() => {
+    if (date === "") return true;
+
+    return !validateDate(date);
+  }, [date]);
+
+  const isInvalidcity = useMemo(() => {
+    if (city === "") return true;
+
+    return validateData(city);
+  }, [city]);
+
+  const isInvalidskill = useMemo(() => {
+    if (skills === "") return true;
+
+    return validateData(skills);
+  }, [skills]);
+
+  const isInvalidimg = useMemo(() => {
+    return !selectedImage;
+  }, [selectedImage]);
+
+  const isInvalidgender = useMemo(() => {
+    return gender === "";
+  }, [gender]);
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -60,8 +118,10 @@ export default function DashBoard() {
       title: !title ? "Title is required" : "",
       description: !description ? "Description is required" : "",
       date: !date ? "Date is required" : "",
-      image: !image ? "Image is required" : "",
+      image: !selectedImage ? "Image is required" : "",
       gender: !gender ? "Gender is required" : "",
+      city: !city ? "Select The City" : "",
+      skills: !skills ? "Select The Skills" : "",
     };
 
     setErrors(newErrors);
@@ -75,7 +135,7 @@ export default function DashBoard() {
       return;
     }
 
-    console.log(name, no, title, description, date);
+    // console.log(name, no, title, description, date);
 
     let result = await fetch(`${BASE_URL}/api/formlist`, {
       method: "POST",
@@ -87,11 +147,22 @@ export default function DashBoard() {
         date,
         image: selectedImage,
         gender,
+        city,
+        skills,
       }),
     });
     result = await result.json();
     if (result.success) {
       toast.success("New Data Added.");
+      setName("");
+      setNo("");
+      setTitle("");
+      setDes("");
+      setDate("");
+      setSelectedImage("");
+      setGender("");
+      setCity("");
+      setSkills([]);
     } else {
       toast.error("Failed to add data.");
     }
@@ -332,7 +403,7 @@ export default function DashBoard() {
             </header>
             <main className="overflow-auto">
               <div className="mx-auto max-w-screen-2xl p-4 md:p-6 lg:p-10">
-                <div className="rounded-sm border border-stone-300 bg-white px-8 py-6 shadow-default">
+                <div className="rounded-sm border border-stone-300 bg-black px-8 py-6 shadow-default">
                   <form onSubmit={handleSubmit} action="#" className="relative">
                     <h1 className="mb-6 text-center font-bold text-2xl text-primary-500">
                       Inquiry Form
@@ -343,97 +414,78 @@ export default function DashBoard() {
                           type="text"
                           label="Name:"
                           value={name}
+                          variant="bordered"
+                          isInvalid={isInvalidname}
+                          className="text-default-700"
+                          color={isInvalidname ? "danger" : "success"}
                           onChange={(e) => setName(e.target.value)}
-                          className={
-                            errors.name
-                              ? "border-red-500 border-4 rounded-2xl"
-                              : ""
-                          }
                         />
-                        {errors.name && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.name}
-                          </p>
-                        )}
                       </div>
                       <div className="py-4">
                         <Input
                           type="text"
+                          maxLength={10}
                           label="Mobile No:"
                           value={no}
-                          onChange={(e) => setNo(e.target.value)}
-                          className={
-                            errors.no
-                              ? "border-red-500 border-4 rounded-2xl"
-                              : ""
-                          }
+                          variant="bordered"
+                          className="text-default-700"
+                          isInvalid={isnumInvalid}
+                          color={isnumInvalid ? "danger" : "success"}
+                          onChange={(e) => {
+                            const value = e.target.value;
+
+                            // Only allow numbers (digits 0-9)
+                            if (/^[0-9]*$/.test(value)) {
+                              setNo(value); // Set the value only if it's a valid number
+                            }
+                          }}
                         />
-                        {errors.no && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.no}
-                          </p>
-                        )}
                       </div>
                       <div className="py-4">
                         <Input
                           type="text"
                           label="Title:"
                           value={title}
+                          variant="bordered"
+                          isInvalid={isInvalidtitle}
+                          className="text-default-700"
+                          color={isInvalidtitle ? "danger" : "success"}
                           onChange={(e) => setTitle(e.target.value)}
-                          className={
-                            errors.title
-                              ? "border-red-500 border-4 rounded-2xl"
-                              : ""
-                          }
                         />
-                        {errors.title && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.title}
-                          </p>
-                        )}
                       </div>
                       <div className="py-4">
                         <Input
                           type="text"
                           label="Description:"
                           value={description}
+                          variant="bordered"
+                          isInvalid={isInvaliddes}
+                          className="text-default-700"
+                          color={isInvaliddes ? "danger" : "success"}
                           onChange={(e) => setDes(e.target.value)}
-                          className={
-                            errors.description
-                              ? "border-red-500 border-4 rounded-2xl"
-                              : ""
-                          }
                         />
-                        {errors.description && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.description}
-                          </p>
-                        )}
                       </div>
                       <div className="py-4">
-                        <input
+                        <Input
                           type="date"
-                          label="Birth Date"
-                          className={`w-full px-3 py-3.5 rounded-xl text-default-600 text-small bg-default-100 hover:bg-default-200 ${
-                            errors.date
-                              ? "border-red-500 border-4 rounded-2xl"
-                              : ""
-                          }`}
+                          label="Birth Date:"
+                          className="w-full rounded-xl text-default-600 text-small"
                           value={date}
+                          variant="bordered"
+                          isInvalid={isInvaliddate}
+                          color={isInvaliddate ? "danger" : "success"}
                           onChange={(e) => setDate(e.target.value)}
                         />
-                        {errors.date && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.date}
-                          </p>
-                        )}
                       </div>
                       <div className="py-4">
-                        <input
+                        <Input
                           type="file"
                           accept="image/*"
                           onChange={handleImageChange}
                           value={image}
+                          variant="bordered"
+                          isInvalid={isInvalidimg}
+                          color={isInvalidimg ? "danger" : "success"}
                           className="block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-full file:border-0
@@ -452,38 +504,144 @@ export default function DashBoard() {
                             />
                           </div>
                         )}
-                        {errors.image && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.image}
-                          </p>
-                        )}
                       </div>
                       <div className="py-4">
                         <RadioGroup
-                          label="Select Gender"
+                          label="Select Gender:"
                           orientation="horizontal"
-                          color="secondary"
+                          value={gender}
+                          variant="bordered"
+                          isInvalid={isInvalidgender}
+                          color={isInvalidgender ? "danger" : "success"}
                           onChange={(e) => setGender(e.target.value)}
                         >
-                          <Radio value="Male" className="text-black">
-                            Male
+                          <Radio value="Male">
+                            <span className="text-default-400">Male</span>
                           </Radio>
-                          <Radio value="Female" className="text-black">
-                            Female
+                          <Radio value="Female">
+                            <span className="text-default-400">Female</span>
                           </Radio>
-                          <Radio value="Others" className="text-black">
-                            Others
+                          <Radio value="Others">
+                            <span className="text-default-400">Others</span>
                           </Radio>
                         </RadioGroup>
-                        {errors.gender && (
-                          <p className="text-red-500 text-sm pl-3 mt-1">
-                            {errors.gender}
-                          </p>
-                        )}
+                      </div>
+                      <div className="py-4">
+                        <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                          <Select
+                            label="Select City:"
+                            value={city}
+                            className="w-full text-default-700"
+                            variant="bordered"
+                            isInvalid={isInvalidcity}
+                            color={isInvalidcity ? "danger" : "success"}
+                            onChange={(e) => setCity(e.target.value)}
+                          >
+                            <SelectItem
+                              key="Junagadh"
+                              value="Junagadh"
+                              className="text-default-700"
+                            >
+                              Junagadh
+                            </SelectItem>
+                            <SelectItem
+                              key="Rajkot"
+                              value="Rajkot"
+                              className="text-default-700"
+                            >
+                              Rajkot
+                            </SelectItem>
+                            <SelectItem
+                              key="Surat"
+                              value="Surat"
+                              className="text-default-700"
+                            >
+                              Surat
+                            </SelectItem>
+                            <SelectItem
+                              key="Banglore"
+                              value="Banglore"
+                              className="text-default-700"
+                            >
+                              Banglore
+                            </SelectItem>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="py-4">
+                        <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+                          <Select
+                            label="Skills:"
+                            value={skills}
+                            variant="bordered"
+                            isInvalid={isInvalidskill}
+                            color={isInvalidskill ? "danger" : "success"}
+                            className="w-full text-default-700"
+                            selectionMode="multiple"
+                            onChange={(e) => setSkills(e.target.value)}
+                          >
+                            <SelectItem
+                              key="HTML"
+                              value="HTML"
+                              className="text-default-700"
+                            >
+                              HTML
+                            </SelectItem>
+                            <SelectItem
+                              key="CSS"
+                              value="CSS"
+                              className="text-default-700"
+                            >
+                              CSS
+                            </SelectItem>
+                            <SelectItem
+                              key="BOOTSTRAP"
+                              value="BOOTSTRAP"
+                              className="text-default-700"
+                            >
+                              BOOTSTRAP
+                            </SelectItem>
+                            <SelectItem
+                              key="JAVA-SCRIPT"
+                              value="JAVA-SCRIPT"
+                              className="text-default-700"
+                            >
+                              JAVA-SCRIPT
+                            </SelectItem>
+                            <SelectItem
+                              key="REACT-JS"
+                              value="REACT-JS"
+                              className="text-default-700"
+                            >
+                              REACT-JS
+                            </SelectItem>
+                            <SelectItem
+                              key="NEXT-JS"
+                              value="NEXT-JS"
+                              className="text-default-700"
+                            >
+                              NEXT-JS
+                            </SelectItem>
+                            <SelectItem
+                              key="NEXT-UI"
+                              value="NEXT-UI"
+                              className="text-default-700"
+                            >
+                              NEXT-UI
+                            </SelectItem>
+                            <SelectItem
+                              key="TAILWIND-CSS"
+                              value="TAILWIND-CSS"
+                              className="text-default-700"
+                            >
+                              TAILWIND-CSS
+                            </SelectItem>
+                          </Select>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex justify-center py-4">
-                      <Button type="submit" color="danger">
+                    <div className="flex justify-end py-4">
+                      <Button type="submit" className="px-8" color="danger">
                         Submit
                       </Button>
                     </div>
